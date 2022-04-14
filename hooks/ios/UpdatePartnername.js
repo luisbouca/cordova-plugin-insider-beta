@@ -6,10 +6,10 @@ const pluginId = "cordova-plugin-insider";
 module.exports = function(context) {
     console.log("Changing Partner Name!")
     
-    const configPath = path.join("plugins/ios.json"); 
+    const configPath = path.join("plugins/fetch.json"); 
     const configsString = fs.readFileSync(configPath,"utf-8");
     var configs = JSON.parse(configsString);
-    configs = configs.installed_plugins[pluginId];
+    configs = configs[pluginId].variables;
     
     const ConfigParser = require('cordova-common').ConfigParser;
     const config = new ConfigParser("config.xml");
@@ -25,7 +25,7 @@ module.exports = function(context) {
 
     const partnerName = configs.PARTNER_NAME;
 
-    console.log("Changing Plist Partner Name!")
+    console.log("Changing Plist Partner Name to "+partnerName+"!")
     var contentPlist = fs.readFileSync(pathPlist,"utf-8");
 
     contentPlist = contentPlist.replace(/(\$PARTNER_NAME)/,partnerName)
