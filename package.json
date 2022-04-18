@@ -12,5 +12,10 @@
     "cordova-ios"
   ],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "xcode":"~3.0.0",
+    "adm-zip": "^0.4.13",
+    "decode-html": "^2.0.0"
+}
 }
