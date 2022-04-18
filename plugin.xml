@@ -23,10 +23,9 @@
         <preference name="PARTNER_NAME" default="Name"/>
 
         <hook type="after_plugin_install" src="hooks/android/addGoogleServices.js" />
-        <hook type="after_plugin_install" src="hooks/android/addToolsManifest.js"/>
+        <hook type="after_plugin_install" src="hooks/android/handle_agconnect_services.js" />
         <hook type="after_prepare" src="hooks/android/addGoogleServices.js" />
         <hook type="before_prepare" src="hooks/android/updatePartnerName.js" />
-        <hook type="before_prepare" src="hooks/android/addToolsManifest.js"/>
 
         <config-file target="AndroidManifest.xml" parent="/manifest">
             <uses-permission android:name="android.permission.INTERNET"/>
@@ -35,49 +34,6 @@
             <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
         </config-file>
 
-        <config-file target="AndroidManifest.xml" parent="/manifest/application">
-            <receiver
-                tools:node="merge"
-                android:name="com.useinsider.insider.InsiderGeofenceReceiver"
-                android:exported="false" />
-
-            <service
-                tools:node="merge"
-                android:name="com.useinsider.insider.InsiderFirebaseMessagingService"
-                android:exported="false" >
-            </service>
-            <service
-                tools:node="merge"
-                android:name="com.useinsider.insider.InsiderHuaweiMessagingService" 
-                android:exported="false" >
-            </service>
-            <service
-                tools:node="merge"
-                android:name="com.useinsider.insider.IntegrationWizard"
-                android:exported="false" />
-            <service
-                tools:node="merge"
-                android:name="com.useinsider.insider.InsiderAmplificationService"
-                android:exported="false" >
-            </service>
-
-            <receiver
-                tools:node="merge"
-                android:name="com.huawei.hms.support.api.push.PushReceiver"
-                android:exported="false" >
-            </receiver>
-
-            <receiver
-                android:exported="false"
-                android:name="com.huawei.hms.support.api.push.PushMsgReceiver"
-                tools:node="merge" />
-
-            <service android:name="insider.cordova.insider.InsiderFirebaseMessagingService" android:exported="false">
-                <intent-filter>
-                    <action android:name="com.google.firebase.MESSAGING_EVENT" />
-                </intent-filter>
-            </service>
-        </config-file>
 
         <source-file src="src/android/InsiderPlugin.java" target-dir="src/insider/cordova/insider" />
 

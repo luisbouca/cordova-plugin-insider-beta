@@ -26,7 +26,7 @@ public class InsiderPlugin extends CordovaPlugin {
         Log.d("Insider Cordova Plugin", "Initialized");
 
         Insider.Instance.init(
-            this.cordova.getActivity(),
+            this.cordova.getActivity().getApplication(),
             partnerName
         );
     }

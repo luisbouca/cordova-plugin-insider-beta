@@ -17,6 +17,71 @@ module.exports = {
         pluginName:"cordova-plugin-insider"
     },
 
+    getPlatformVersion: function (context) {
+        var projectRoot = context.opts.projectRoot;
+    
+        var packageJsonFile = path.join(
+            projectRoot,
+            "package.json"
+        );
+    
+        var devDependencies = require(packageJsonFile).devDependencies;
+    
+        if(devDependencies !== undefined){
+            //Probably MABS7
+            var platform = devDependencies["cordova-android"];
+            if (platform.includes('^')){
+                var index = platform.indexOf('^');
+                platform = platform.slice(0, index) + platform.slice(index+1);
+            }
+            if (platform.includes('#')){
+                var index = platform.indexOf('#');
+                platform = platform.slice(index+1);
+            }
+            if (platform.includes('+')){
+                var index = platform.indexOf('+');
+                platform = platform.slice(0,index);
+            }
+            return platform;
+        } else {
+            //Probably MABS6.X
+            var platformsJsonFile = path.join(
+                projectRoot,
+                "platforms",
+                "platforms.json"
+            );
+            var platforms = require(platformsJsonFile);
+            var platform = context.opts.plugin.platform;
+            return platforms[platform];
+        }    
+    },
+
+    getPlatformPath: function (context) {
+        var projectRoot = context.opts.projectRoot;
+        var platform = context.opts.plugin.platform;
+        return path.join(projectRoot, "platforms", platform);
+    },
+
+    getWwwPath: function (context) {
+        var platformPath = module.exports.getPlatformPath(context);
+        console.log("platformPath: ", platformPath);
+        var platform = context.opts.plugin.platform;
+        console.log("platform: ", platform);
+        var wwwfolder;
+        if (platform === "android") {
+            var platformVersion = module.exports.getPlatformVersion(context);
+            var majorPlatformVersion = platformVersion.split(".")[0];
+            if (parseInt(majorPlatformVersion) >= 7) { 
+                wwwfolder = "app/src/main/assets/www";
+            } else {
+                wwwfolder = "assets/www";
+            }
+        } else if (platform === "ios") {
+            wwwfolder = "www";
+        }
+        return path.join(platformPath, wwwfolder);
+    },
+
     getCordovaParameter: function (context,variableName, contents) {
         var variable;
         if(process.argv.join("|").indexOf(variableName + "=") > -1) {
