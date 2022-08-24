@@ -36,6 +36,11 @@ insider.registerWithQuietPermission = (booleanValue) => {
     exec(null, null, 'insider', 'registerWithQuietPermission', [booleanValue.toString().toLowerCase()]);
 };
 
+//Set Push Optin
+insider.setPushOptIn = (pushOptin) => {
+    exec(null, null, 'insider', 'setPushOptin', [pushOptin]);
+};
+
 module.exports = insider;
 
 window.Insider = insider;

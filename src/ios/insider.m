@@ -11,6 +11,7 @@
 - (void) setGDPRConsent:(CDVInvokedUrlCommand *)command;
 - (void) startTrackingGeofence:(CDVInvokedUrlCommand *)command;
 - (void) tagEvent:(CDVInvokedUrlCommand *)command;
+- (void) setPushOptIn:(CDVInvokedUrlCommand *)command;
 @end
 
 @implementation insider
@@ -85,6 +86,15 @@ static NSString *APP_GROUP = @"group.com.useinsider.plugin";
         [Insider removeInapp];
     } @catch (NSException *exception) {
         [Insider sendError:exception desc:@"insider.m - tagEvent"];
+    }
+}
+
+- (void)setPushOptin:(CDVInvokedUrlCommand *)command {
+    @try {
+        if (![command.arguments objectAtIndex:0]) return;
+        [Insider getCurrentUser].setPushOptin([[command.arguments objectAtIndex:0] boolValue]);
+    } @catch (NSException *e) {
+        [Insider sendError:e desc:[NSString stringWithFormat:@"%s:%d", __func__, __LINE__]];
     }
 }
 

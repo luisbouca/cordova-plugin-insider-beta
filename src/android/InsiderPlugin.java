@@ -3,6 +3,7 @@ package insider.cordova.insider;
 import com.useinsider.insider.Insider;
 import com.useinsider.insider.InsiderCallback;
 import com.useinsider.insider.InsiderCallbackType;
+import com.useinsider.insider.InsiderUser;
 import com.useinsider.insider.ContentOptimizerDataType;
 
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -33,12 +34,16 @@ public class InsiderPlugin extends CordovaPlugin {
 
     @Override
     public boolean execute(String action, final JSONArray args, final CallbackContext callbackContext) {
-        if (args == null || args.length() == 0) {
+        if (args == null) {
             return false;
         }
 
         try {
             if (action.equals("init")) {
+                Insider.Instance.init(
+                    this.cordova.getActivity().getApplication(),
+                    partnerName
+                );
                 Log.d("Insider Cordova Plugin Partner Name", partnerName);
             } else if (action.equals("setGDPRConsent")) {
                 Insider.Instance.setGDPRConsent(Boolean.parseBoolean(args.getString(0)));
@@ -70,6 +75,11 @@ public class InsiderPlugin extends CordovaPlugin {
                 callbackSuccess(callbackContext, optimizedBoolean);
             } else if (action.equals("removeInapp")) {
                 Insider.Instance.removeInapp(this.cordova.getActivity());
+            } else if (action.equals("setPushOptin")) {
+                if (args.get(0) == null)
+                    return false;
+
+                Insider.Instance.getCurrentUser().setPushOptin(args.getBoolean(0));
             } else {
                 return false;
             }
