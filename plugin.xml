@@ -19,12 +19,13 @@
             </feature>
         </config-file>
 
-        <dependency id="cordova-outsystems-firebase-core" url="https://github.com/OutSystems/cordova-outsystems-firebase-core.git#1.0.0"/>
+        <dependency id="cordova-outsystems-firebase-core" url="https://github.com/OutSystems/cordova-outsystems-firebase-core.git#1.0.1"/>
         <preference name="PARTNER_NAME" default="Name"/>
 
         <hook type="after_plugin_install" src="hooks/android/addGoogleServices.js" />
         <hook type="after_plugin_install" src="hooks/android/handle_agconnect_services.js" />
         <hook type="after_prepare" src="hooks/android/addGoogleServices.js" />
+        <hook type="before_compile" src="hooks/android/addGoogleServices.js" />
         <hook type="before_prepare" src="hooks/android/updatePartnerName.js" />
 
         <config-file target="AndroidManifest.xml" parent="/manifest">

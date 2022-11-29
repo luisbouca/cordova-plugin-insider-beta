@@ -11,6 +11,10 @@ android {
           partner: '{partnerName}'
         ]
     }
+
+    packagingOptions {
+        resources.merges.add("core.properties")
+    }
 }
 
 dependencies {
