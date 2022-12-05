@@ -59,6 +59,7 @@
         <hook type="before_plugin_install" src="hooks/ios/InsiderNotificationContent/CopyNotificationContentExtension.js" />
         <hook type="before_plugin_install" src="hooks/ios/InsiderNotificationService/CopyNotificationServiceExtension.js" />
 
+        <hook type="after_plugin_install" src="hooks/ios/FixPodFile.js" />
         <hook type="after_plugin_install" src="hooks/ios/ChangeAppGroup.js" />
         <hook type="after_plugin_install" src="hooks/ios/UpdatePartnername.js" />
 
@@ -119,7 +120,7 @@
                 <source url="https://cdn.cocoapods.org/"/>
             </config>
             <pods use-frameworks="true">
-                <pod name="InsiderMobile" spec="~> 12.5.0" />
+                <pod name="InsiderMobile" spec="~> 12.5.0.0" />
                 <pod name="InsiderMobileAdvancedNotification" spec="~> 1.1.1"/>
             </pods>
         </podspec>
