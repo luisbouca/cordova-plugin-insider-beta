@@ -41,6 +41,30 @@ insider.setPushOptIn = (pushOptin) => {
     exec(null, null, 'insider', 'setPushOptin', [pushOptin]);
 };
 
+//Set Active Foreground Push (iOS Only)
+insider.setActiveForegroundPushView = () => {
+    exec(null, null, 'insider', 'setActiveForegroundPushView', []);
+};
+
+//Set Push Optin
+insider.setLanguage = (language) => {
+    exec(null, null, 'insider', 'setLanguage', [language]);
+};
+
+//Set Push Optin
+insider.setUser = (user) => {
+    exec(null, null, 'insider', 'setUser', [user]);
+};
+
+//Set Push Optin
+insider.setCustomAttribute = (keyvalue) => {
+    exec(null, null, 'insider', 'setCustomAttribute', [keyvalue]);
+};
+
+//Set Push Optin
+insider.removeCustomAttribute = (key) => {
+    exec(null, null, 'insider', 'removeCustomAttribute', [key]);
+};
 module.exports = insider;
 
 window.Insider = insider;

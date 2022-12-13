@@ -11,7 +11,12 @@
 - (void) setGDPRConsent:(CDVInvokedUrlCommand *)command;
 - (void) startTrackingGeofence:(CDVInvokedUrlCommand *)command;
 - (void) tagEvent:(CDVInvokedUrlCommand *)command;
-- (void) setPushOptIn:(CDVInvokedUrlCommand *)command;
+- (void) setPushOptin:(CDVInvokedUrlCommand *)command;
+- (void) setActiveForegroundPushView:(CDVInvokedUrlCommand *)command;
+- (void) setLanguage:(CDVInvokedUrlCommand *)command;
+- (void) setUser:(CDVInvokedUrlCommand *)command;
+- (void) setCustomAttribute:(CDVInvokedUrlCommand *)command;
+- (void) removeCustomAttribute:(CDVInvokedUrlCommand *)command;
 @end
 
 @implementation insider
@@ -97,5 +102,98 @@ static NSString *APP_GROUP = @"group.com.useinsider.plugin";
         [Insider sendError:e desc:[NSString stringWithFormat:@"%s:%d", __func__, __LINE__]];
     }
 }
+- (void)setActiveForegroundPushView:(CDVInvokedUrlCommand *)command {
+    @try {
+        [Insider setActiveForegroundPushView];
+    } @catch (NSException *e) {
+        [Insider sendError:e desc:[NSString stringWithFormat:@"%s:%d", __func__, __LINE__]];
+    }
+}
+- (void)setLanguage:(CDVInvokedUrlCommand *)command {
+    @try {
+        if (![command.arguments objectAtIndex:0]) return;
+        [Insider getCurrentUser].setLanguage([[command.arguments objectAtIndex:0] stringValue]);
+    } @catch (NSException *e) {
+        [Insider sendError:e desc:[NSString stringWithFormat:@"%s:%d", __func__, __LINE__]];
+    }
+}
+- (void)setUser:(CDVInvokedUrlCommand *)command {
+    @try {
+        if (![command.arguments objectAtIndex:0]) return;
+        [self mySetUser:[command.arguments objectAtIndex:0]];
+    } @catch (NSException *e) {
+        [Insider sendError:e desc:[NSString stringWithFormat:@"%s:%d", __func__, __LINE__]];
+    }
+}
+- (void)setCustomAttribute:(CDVInvokedUrlCommand *)command {
+    @try {
+        if (![command.arguments objectAtIndex:0]) return;
+        NSDictionary* keyValue = [command.arguments objectAtIndex:0];
+        [Insider getCurrentUser].setCustomAttributeWithString([keyValue valueForKey:@"Key"],[keyValue valueForKey:@"Value"]);
+    } @catch (NSException *e) {
+        [Insider sendError:e desc:[NSString stringWithFormat:@"%s:%d", __func__, __LINE__]];
+    }
+}
+- (void)removeCustomAttribute:(CDVInvokedUrlCommand *)command {
+    @try {
+        if (![command.arguments objectAtIndex:0]) return;
+        [Insider getCurrentUser].unsetCustomAttribute([[command.arguments objectAtIndex:0] stringValue]);
+    } @catch (NSException *e) {
+        [Insider sendError:e desc:[NSString stringWithFormat:@"%s:%d", __func__, __LINE__]];
+    }
+}
 
+- (void) mySetUser:(NSDictionary*)users{
+    InsiderIdentifiers *identifier = [[InsiderIdentifiers alloc] init];
+    NSString* email = [[users valueForKey:@"email"] stringValue];
+    if (email != nil) {
+        identifier.addEmail(email);
+    }
+    
+    NSString* phoneNumber = [[users valueForKey:@"phoneNumber"] stringValue];
+    if (phoneNumber != nil) {
+        identifier.addPhoneNumber(phoneNumber);
+    }
+    
+    NSString* userID = [[users valueForKey:@"userID"] stringValue];
+    if (userID != nil) {
+        identifier.addUserID(userID);
+    }
+    
+    [[Insider getCurrentUser] login:identifier];
+    
+    NSString* birthday = [[users valueForKey:@"birthday"] stringValue];
+    if (birthday != nil) {
+        NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+        [dateFormatter setDateFormat:@"yyyy-MM-dd"];
+        NSDate *dateBirth = [dateFormatter dateFromString: birthday];
+        [Insider getCurrentUser].setBirthday(dateBirth);
+    }
+    
+    NSString* name = [[users valueForKey:@"name"] stringValue];
+    if (name != nil) {
+        [Insider getCurrentUser].setName(name);
+    }
+    
+    NSString* surname = [[users valueForKey:@"surname"] stringValue];
+    if (surname != nil) {
+        [Insider getCurrentUser].setSurname(surname);
+    }
+    
+    NSNumber* age = [users valueForKey:@"age"];
+    if (age != nil) {
+        [Insider getCurrentUser].setAge([age intValue]);
+    }
+    
+    NSString* gender = [[users valueForKey:@"gender"] stringValue];
+    if (gender != nil) {
+        if ([gender isEqualToString:@"male"]) {
+            [Insider getCurrentUser].setGender(InsiderGenderMale);
+        }else if ([gender isEqualToString:@"female"]) {
+            [Insider getCurrentUser].setGender(InsiderGenderFemale);
+        }else{
+            [Insider getCurrentUser].setGender(InsiderGenderOther);
+        }
+    }
+}
 @end
