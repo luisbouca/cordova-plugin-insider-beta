@@ -32,6 +32,7 @@ import java.util.Date;
 public class InsiderPlugin extends CordovaPlugin {
     private String partnerName = "";
     private static final String TAG = "Insider Cordova Plugin";
+    private CallbackContext callbackContext;
 
     @Override
     protected void pluginInitialize() {
@@ -41,6 +42,18 @@ public class InsiderPlugin extends CordovaPlugin {
             this.cordova.getActivity().getApplication(),
             partnerName
         );
+        Insider.Instance.registerInsiderCallback(new InsiderCallback() {
+            @Override
+            public void doAction(JSONObject jsonObject, InsiderCallbackType callbackType) {
+                if (callbackContext == null){
+                    return;
+                }
+                String json = "{'action':'" + callbackType + "','result':" + jsonObject.toString() + "}";
+                PluginResult result = new PluginResult(PluginResult.Status.OK,json);
+                result.setKeepCallback(true);
+                callbackContext.sendPluginResult(result);
+            }
+        });
     }
 
     @Override
@@ -58,8 +71,6 @@ public class InsiderPlugin extends CordovaPlugin {
                 Log.d(TAG, "Partner Name:" +partnerName);
             } else if (action.equals("setGDPRConsent")) {
                 Insider.Instance.setGDPRConsent(Boolean.parseBoolean(args.getString(0)));
-            } else if (action.equals("enableIDFACollection")) {
-                Insider.Instance.enableIDFACollection(Boolean.parseBoolean(args.getString(0)));
             } else if (action.equals("startTrackingGeofence")) {
                 Insider.Instance.startTrackingGeofence();
             } else if (action.equals("tagEvent")) {
@@ -112,7 +123,7 @@ public class InsiderPlugin extends CordovaPlugin {
                     return false;
                 }
                 Insider.Instance.getCurrentUser().unsetCustomAttribute(args.getString(0));
-            }else{
+            }else if(action.equals("setCallback")){
                 return false;
             }
 

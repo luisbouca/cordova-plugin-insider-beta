@@ -7,7 +7,6 @@
 
 - (void) init:(CDVInvokedUrlCommand *)command;
 - (void) registerWithQuietPermission:(CDVInvokedUrlCommand *)command;
-- (void) enableIDFACollection:(CDVInvokedUrlCommand *)command;
 - (void) setGDPRConsent:(CDVInvokedUrlCommand *)command;
 - (void) startTrackingGeofence:(CDVInvokedUrlCommand *)command;
 - (void) tagEvent:(CDVInvokedUrlCommand *)command;
@@ -16,13 +15,13 @@
 - (void) setLanguage:(CDVInvokedUrlCommand *)command;
 - (void) setUser:(CDVInvokedUrlCommand *)command;
 - (void) setCustomAttribute:(CDVInvokedUrlCommand *)command;
-- (void) removeCustomAttribute:(CDVInvokedUrlCommand *)command;
 @end
 
 @implementation insider
 
 // The variable for your app group name that you will use to init the SDK.
 static NSString *APP_GROUP = @"group.com.useinsider.plugin";
+NSString *callbackId = @"";
 
 - (void) pluginInitialize {
     NSLog(@"Insider Cordova Plugin: Initialized");
@@ -32,9 +31,58 @@ static NSString *APP_GROUP = @"group.com.useinsider.plugin";
     @try {
         NSString* partnerName = [[command arguments] objectAtIndex:0];
         
+        [Insider registerInsiderCallbackWithSelector:@selector(insiderCallback:) sender:self];
         [Insider initWithLaunchOptions:nil partnerName:partnerName appGroup:APP_GROUP];
+        [Insider resumeSession];
     } @catch (NSException *exception) {
         [Insider sendError:exception desc:@"insider.m - init"];
+    }
+}
+
+-(void)insiderCallback:(NSDictionary *)notfDict {
+    
+    @try {
+        if (!notfDict || [notfDict count] == 0 || !callbackId)
+            return;
+        
+        InsiderCallbackType type = (InsiderCallbackType)[[notfDict objectForKey:@"type"] intValue];
+        
+        NSError *error;
+        NSData *notfData = [NSJSONSerialization dataWithJSONObject:notfDict options:0 error:&error];
+
+        CDVPluginResult * result = nil;
+        switch (type) {
+            case InsiderCallbackTypeNotificationOpen:{
+                NSString * data = [NSString stringWithFormat:@"{""action"":'NOTIFICATION_OPEN',""result"":""%@""}", notfData];
+                result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:data];
+                break;
+            }
+            case InsiderCallbackTypeInappButtonClick:{
+                NSString * data = [NSString stringWithFormat:@"{""action"":'INAPP_BUTTON_CLICK',""result"":""%@""}", notfData];
+                result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:data];
+                break;
+            }
+            case InsiderCallbackTypeTempStorePurchase:{
+                NSString * data = [NSString stringWithFormat:@"{""action"":'TEMP_STORE_PURCHASE',""result"":""%@""}", notfData];
+                result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:data];
+                break;
+            }
+            case InsiderCallbackTypeTempStoreAddedToCart:{
+                NSString * data = [NSString stringWithFormat:@"{""action"":'TEMP_STORE_ADDED_TO_CART',""result"":""%@""}", notfData];
+                result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:data];
+                break;
+            }
+            case InsiderCallbackTypeTempStoreCustomAction:{
+                NSString * data = [NSString stringWithFormat:@"{""action"":'TEMP_STORE_CUSTOM_ACTION',""result"":""%@""}", notfData];
+                result = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK messageAsString:data];
+                break;
+            }
+            default:
+            break;
+        }
+        [self.commandDelegate sendPluginResult:result callbackId:callbackId];
+    } @catch (NSException *e){
+        [Insider sendError:e desc:[NSString stringWithFormat:@"%s:%d", __func__, __LINE__]];
     }
 }
 
@@ -45,16 +93,6 @@ static NSString *APP_GROUP = @"group.com.useinsider.plugin";
         [Insider registerWithQuietPermission:[booleanValueByString isEqualToString: @"true"]];
     } @catch (NSException *exception) {
         [Insider sendError:exception desc:@"insider.m - registerWithQuietPermission"];
-    }
-}
-
-- (void) enableIDFACollection:(CDVInvokedUrlCommand *)command {
-    @try {
-        NSString* booleanValueByString = [[command arguments] objectAtIndex:0];
-        
-        [Insider enableIDFACollection:[booleanValueByString isEqualToString: @"true"]];
-    } @catch (NSException *exception) {
-        [Insider sendError:exception desc:@"insider.m - enableIDFACollection"];
     }
 }
 
@@ -99,14 +137,14 @@ static NSString *APP_GROUP = @"group.com.useinsider.plugin";
         if (![command.arguments objectAtIndex:0]) return;
         [Insider getCurrentUser].setPushOptin([[command.arguments objectAtIndex:0] boolValue]);
     } @catch (NSException *e) {
-        [Insider sendError:e desc:[NSString stringWithFormat:@"%s:%d", __func__, __LINE__]];
+        [Insider sendError:e desc:[NSString stringWithFormat:@"Insider.m - setPushOptIn"]];
     }
 }
 - (void)setActiveForegroundPushView:(CDVInvokedUrlCommand *)command {
     @try {
         [Insider setActiveForegroundPushView];
     } @catch (NSException *e) {
-        [Insider sendError:e desc:[NSString stringWithFormat:@"%s:%d", __func__, __LINE__]];
+        [Insider sendError:e desc:[NSString stringWithFormat:@"Insider.m - setActiveForegroundPushView"]];
     }
 }
 - (void)setLanguage:(CDVInvokedUrlCommand *)command {
@@ -114,7 +152,7 @@ static NSString *APP_GROUP = @"group.com.useinsider.plugin";
         if (![command.arguments objectAtIndex:0]) return;
         [Insider getCurrentUser].setLanguage([[command.arguments objectAtIndex:0] stringValue]);
     } @catch (NSException *e) {
-        [Insider sendError:e desc:[NSString stringWithFormat:@"%s:%d", __func__, __LINE__]];
+        [Insider sendError:e desc:[NSString stringWithFormat:@"Insider.m - setLanguage"]];
     }
 }
 - (void)setUser:(CDVInvokedUrlCommand *)command {
@@ -122,25 +160,21 @@ static NSString *APP_GROUP = @"group.com.useinsider.plugin";
         if (![command.arguments objectAtIndex:0]) return;
         [self mySetUser:[command.arguments objectAtIndex:0]];
     } @catch (NSException *e) {
-        [Insider sendError:e desc:[NSString stringWithFormat:@"%s:%d", __func__, __LINE__]];
+        [Insider sendError:e desc:[NSString stringWithFormat:@"Insider.m - setUser"]];
     }
 }
 - (void)setCustomAttribute:(CDVInvokedUrlCommand *)command {
     @try {
-        if (![command.arguments objectAtIndex:0]) return;
-        NSDictionary* keyValue = [command.arguments objectAtIndex:0];
-        [Insider getCurrentUser].setCustomAttributeWithString([keyValue valueForKey:@"Key"],[keyValue valueForKey:@"Value"]);
+        if (![command.arguments objectAtIndex:0] || ![command.arguments objectAtIndex:1]) return;
+        NSString* key = [command.arguments objectAtIndex:0];
+        NSString* value = [command.arguments objectAtIndex:1];
+        [Insider getCurrentUser].setCustomAttributeWithString(key,value);
     } @catch (NSException *e) {
-        [Insider sendError:e desc:[NSString stringWithFormat:@"%s:%d", __func__, __LINE__]];
+        [Insider sendError:e desc:[NSString stringWithFormat:@"Insider.m - setCustomAttribute"]];
     }
 }
-- (void)removeCustomAttribute:(CDVInvokedUrlCommand *)command {
-    @try {
-        if (![command.arguments objectAtIndex:0]) return;
-        [Insider getCurrentUser].unsetCustomAttribute([[command.arguments objectAtIndex:0] stringValue]);
-    } @catch (NSException *e) {
-        [Insider sendError:e desc:[NSString stringWithFormat:@"%s:%d", __func__, __LINE__]];
-    }
+- (void)setCallback:(CDVInvokedUrlCommand *)command {
+    callbackId = command.callbackId;
 }
 
 - (void) mySetUser:(NSDictionary*)users{

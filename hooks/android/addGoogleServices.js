@@ -49,10 +49,10 @@ module.exports = function(context) {
         var content = fs.readFileSync(pathConfig,"utf-8");
 
         content = content.replace(/([\s|\S]*)(dependencies {)([\s|\S]*)/,(m,g1,g2,g3)=>{
-            if(g3.includes("com.google.gms:google-services:4.2.0")){
+            if(g3.includes("com.google.gms:google-services:4.3.3")){
                 return g1+g2+g3;
             }else{
-                return g1+g2+"\n    classpath 'com.google.gms:google-services:4.2.0'"+g3;
+                return g1+g2+"\n    classpath 'com.google.gms:google-services:4.3.3'"+g3;
             }
         })
 
