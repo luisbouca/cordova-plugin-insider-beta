@@ -8,8 +8,6 @@ import com.useinsider.insider.InsiderIdentifiers;
 import com.useinsider.insider.InsiderUser;
 import com.useinsider.insider.ContentOptimizerDataType;
 
-import com.google.firebase.iid.FirebaseInstanceId;
-
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaPlugin;
 import org.apache.cordova.PluginResult;
@@ -113,17 +111,19 @@ public class InsiderPlugin extends CordovaPlugin {
                 }
                 setUser(args.getJSONObject(0));
             }else if(action.equals("setCustomAttribute")){
-                if (args.get(0) == null){
+                if (args.length() <2){
                     return false;
                 }
-                JSONObject keyValue = args.getJSONObject(0);
-                Insider.Instance.getCurrentUser().setCustomAttributeWithString(keyValue.getString("Key"),keyValue.getString("Value"));
+                String key = args.getString(0);
+                String value = args.getString(1);
+                Insider.Instance.getCurrentUser().setCustomAttributeWithString(key,value);
             }else if(action.equals("removeCustomAttribute")){
                 if (args.get(0) == null){
                     return false;
                 }
                 Insider.Instance.getCurrentUser().unsetCustomAttribute(args.getString(0));
             }else if(action.equals("setCallback")){
+                this.callbackContext = callbackContext;
                 return false;
             }
 

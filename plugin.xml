@@ -5,7 +5,7 @@
     <keywords>insider,cordova,cordova-ios,cordova-android</keywords>
     <license>Apache 2.0 License</license>
 
-    <js-module name="insider" src="www/insider.js">
+    <js-module name="InsiderPlugin" src="www/insider.js">
         <clobbers target="insider.instance" />
     </js-module>
     
@@ -13,7 +13,7 @@
     <platform name="android">
 
         <config-file parent="/*" target="res/xml/config.xml">
-            <feature name="insider">
+            <feature name="InsiderPlugin">
                 <param name="android-package" value="insider.cordova.insider.InsiderPlugin" />
                 <param name="onload" value="true" />
             </feature>
@@ -35,8 +35,17 @@
             <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
         </config-file>
 
+        <config-file target="AndroidManifest.xml" parent="/manifest/application">
+            <service android:name="insider.cordova.insider.InsiderFirebaseMessagingService" android:exported="false">
+                <intent-filter>
+                    <action android:name="com.google.firebase.MESSAGING_EVENT" />
+                </intent-filter>
+            </service>
+        </config-file>
+
 
         <source-file src="src/android/InsiderPlugin.java" target-dir="src/insider/cordova/insider" />
+        <source-file src="src/android/InsiderFirebaseMessagingService.java" target-dir="src/insider/cordova/insider" />
 
         <framework src="src/android/insider-internal-build.gradle" custom="true" type="gradleReference"/>
 
@@ -46,8 +55,8 @@
 
 
         <config-file parent="/*" target="config.xml">
-            <feature name="insider">
-                <param name="ios-package" value="insider" />
+            <feature name="InsiderPlugin">
+                <param name="ios-package" value="InsiderPlugin" />
                 <param name="onload" value="true" />
             </feature>
         </config-file>
@@ -109,8 +118,10 @@
             </array>
         </config-file>
 
-        <source-file src="src/ios/insider.m" target-dir="insider" />
-        <header-file src="src/ios/Insider.h" target-dir="ios" />
+        <source-file src="src/ios/InsiderPlugin.m" target-dir="insider" />
+        <header-file src="src/ios/InsiderPlugin.h" target-dir="insider" />
+        <header-file src="src/ios/AppDelegate+Insider.m" target-dir="insider" />
+        <header-file src="src/ios/AppDelegate+Insider.h" target-dir="insider" />
 
         <framework src="libsqlite3.tbd" />
         <framework src="libicucore.tbd" />
