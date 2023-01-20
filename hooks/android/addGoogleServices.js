@@ -52,7 +52,7 @@ module.exports = function(context) {
             if(g3.includes("com.google.gms:google-services")){
                 return g1+g2+g3;
             }else{
-                return g1+g2+"\n    classpath 'com.google.gms:google-services:4.2.0'"+g3;
+                return g1+g2+"\n    classpath 'com.google.gms:google-services:4.3.3'"+g3;
             }
         })
 

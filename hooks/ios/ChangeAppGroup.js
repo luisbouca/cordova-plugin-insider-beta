@@ -43,7 +43,7 @@ module.exports = function(context) {
         "Plugins",
         "cordova-plugin-insider",
         "insider",
-        "insider.m"
+        "InsiderPlugin.m"
     );
 
     replaceFile(appGroup,pathM);

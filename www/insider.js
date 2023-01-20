@@ -11,11 +11,6 @@ insider.setGDPRConsent = (booleanValue) => {
     exec(null, null, 'insider', 'setGDPRConsent', [booleanValue.toString().toLowerCase()]);
 };
 
-// You can send boolean data to enable or disable IDFA Collection. It is disabled by default.
-insider.enableIDFACollection = (booleanValue) => {
-    exec(null, null, 'insider', 'enableIDFACollection', [booleanValue.toString().toLowerCase()]);
-};
-
 // You can use this function to activate geofence.
 insider.startTrackingGeofence = () => {
     exec(null, null, 'insider', 'startTrackingGeofence', []);
@@ -46,25 +41,27 @@ insider.setActiveForegroundPushView = () => {
     exec(null, null, 'insider', 'setActiveForegroundPushView', []);
 };
 
-//Set Push Optin
+//Set Language
 insider.setLanguage = (language) => {
     exec(null, null, 'insider', 'setLanguage', [language]);
 };
 
-//Set Push Optin
+//Set User
 insider.setUser = (user) => {
     exec(null, null, 'insider', 'setUser', [user]);
 };
 
-//Set Push Optin
-insider.setCustomAttribute = (keyvalue) => {
-    exec(null, null, 'insider', 'setCustomAttribute', [keyvalue]);
+//Set custom Attribute
+insider.setCustomAttribute = (key,value) => {
+    exec(null, null, 'insider', 'setCustomAttribute', [key,value]);
 };
 
-//Set Push Optin
-insider.removeCustomAttribute = (key) => {
-    exec(null, null, 'insider', 'removeCustomAttribute', [key]);
+//Set deepLink Callback
+insider.setCallback = (success,fail) => {
+    exec(success, fail, 'insider', 'setCallback', []);
 };
+
+
 module.exports = insider;
 
 window.Insider = insider;

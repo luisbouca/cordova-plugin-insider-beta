@@ -4,6 +4,6 @@ platform :ios, '11.0'
 use_frameworks!
 target 'HelloCordova' do
 	project 'HelloCordova.xcodeproj'
-	pod 'InsiderMobile', '~> 12.5.0.0'
+	pod 'InsiderMobile', '~> 12.7.3.0'
 	pod 'InsiderMobileAdvancedNotification', '~> 1.1.1'
 end
