@@ -49,7 +49,7 @@ module.exports = function(context) {
         var content = fs.readFileSync(pathConfig,"utf-8");
 
         content = content.replace(/([\s|\S]*)(dependencies {)([\s|\S]*)/,(m,g1,g2,g3)=>{
-            if(g3.includes("com.google.gms:google-services:4.2.0")){
+            if(g3.includes("com.google.gms:google-services")){
                 return g1+g2+g3;
             }else{
                 return g1+g2+"\n    classpath 'com.google.gms:google-services:4.2.0'"+g3;
@@ -59,7 +59,9 @@ module.exports = function(context) {
         fs.writeFileSync(pathConfig,content);
 
         var content2 = fs.readFileSync(pathConfig2,"utf-8");
-        content2 = content2 +"\n apply plugin: 'com.google.gms.google-services'";
+        if(!content2.includes("com.google.gms.google-services")){
+            content2 = content2 +"\n apply plugin: 'com.google.gms.google-services'";
+        }
         fs.writeFileSync(pathConfig2,content2);
 
         console.log("Added Google Services!")

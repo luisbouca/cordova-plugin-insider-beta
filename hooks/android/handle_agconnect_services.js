@@ -93,6 +93,58 @@ module.exports = function(context) {
             platform
         );
 
+        var pathConfig = path.join(
+            context.opts.projectRoot,
+            "platforms",
+            "android",
+            "build.gradle"
+        );
+
+        var pathConfig2 = path.join(
+            context.opts.projectRoot,
+            "platforms",
+            "android",
+            "app",
+            "build.gradle"
+        );
+
+        var content = fs.readFileSync(pathConfig,"utf-8");
+
+        content = content.replace(/([\s|\S]*)(dependencies {)([\s|\S]*)/,(m,g1,g2,g3)=>{
+            if(g3.includes("com.huawei.agconnect:agcp")){
+                return g1+g2+g3;
+            }else{
+                return g1+g2+"\n    classpath 'com.huawei.agconnect:agcp:1.2.1.301'"+g3;
+            }
+        })
+
+        fs.writeFileSync(pathConfig,content);
+
+        var pathRepo = path.join(
+            context.opts.projectRoot,
+            "platforms",
+            "android",
+            "repositories.gradle"
+        );
+        var content3 = fs.readFileSync(pathRepo,"utf-8");
+        content3 = content3.replace(/([\s|\S]*)(repos = {)([\s|\S]*)/,(m,g1,g2,g3)=>{
+            if(g3.includes("com.google.gms:google-services")){
+                return g1+g2+g3;
+            }else{
+                return g1+g2+"\n    maven { url \"https://developer.huawei.com/repo/\"}"+g3;
+            }
+        })
+
+        fs.writeFileSync(pathRepo,content3);
+
+        var content2 = fs.readFileSync(pathConfig2,"utf-8");
+        if(!content2.includes("com.huawei.agconnect")){
+            content2 = content2 +"\n apply plugin: 'com.huawei.agconnect'";
+        }
+        fs.writeFileSync(pathConfig2,content2);
+
+        console.log("Added Huawei Services!")
+
         return resolve();
     });
 };
