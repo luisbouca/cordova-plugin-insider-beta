@@ -114,7 +114,7 @@ module.exports = function(context) {
             if(g3.includes("com.huawei.agconnect:agcp")){
                 return g1+g2+g3;
             }else{
-                return g1+g2+"\n    classpath 'com.huawei.agconnect:agcp:1.2.1.301'"+g3;
+                return g1+g2+"\n    classpath 'com.huawei.agconnect:agcp:1.4.1.300'"+g3;
             }
         })
 
